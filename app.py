@@ -2,6 +2,8 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from firebase import setup
+
 app = FastAPI(
     title="NetChill API",
     description="API for NetChill",
@@ -23,6 +25,8 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "DELETE"],  # Specify which method are allowed
     allow_headers=["X-Requested-With", "Content-Type", "Accept", "Origin", "Authorization"],  # Specific headers allowed
 )
+
+setup()
 
 
 @app.get("/")
