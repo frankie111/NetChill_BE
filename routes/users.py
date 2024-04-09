@@ -22,7 +22,7 @@ def save_user_data(user: User):
         user_ref = db.collection('users').document(user.uid)
         user_ref.set({
             'email': user.email,
-            'name': user.name,
+            'username': user.username,
             'is_admin': user.is_admin
         })
         print('Successfully saved user data to Firestore')

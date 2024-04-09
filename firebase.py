@@ -42,4 +42,5 @@ async def verify_token(authorization: str = Security(api_key_header_auth)):
         user = get_auth().verify_id_token(authorization)
         return User(uid=user["user_id"], email=user["email"])
     except Exception as e:
+        print(f"Invalid token: {e}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid token: {e}")
