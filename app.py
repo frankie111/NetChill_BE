@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from firebase import setup
+from routes.users import users
 
 app = FastAPI(
     title="NetChill API",
@@ -10,6 +11,8 @@ app = FastAPI(
     version="0.1.0",
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
 )
+
+app.include_router(users)
 
 origins = [
     'http://localhost:3000',

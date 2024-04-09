@@ -5,6 +5,6 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     uid: str
-    name: Optional[str] = None
+    username: str
     email: str
     is_admin: bool = False
