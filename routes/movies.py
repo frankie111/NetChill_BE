@@ -1,8 +1,10 @@
-from http.client import HTTPException
+from datetime import timedelta
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import requests
 from pydantic import BaseModel
+
+from utils import cache
 
 movies = APIRouter()
 
@@ -11,6 +13,11 @@ BASE_URL = "https://api.themoviedb.org/3/"
 API_URL = BASE_URL + '/discover/movie?sort_by=popularity.desc&' + API_KEY
 
 
+@cache.redis(
+    cache_duration=timedelta(hours=12),
+    suffix=cache.POPULAR_MOVIES_CACHE_SUFFIX,
+    ignore_cache=False
+)
 def get_movies(url):
     response = requests.get(url)
     if response.status_code == 200:
