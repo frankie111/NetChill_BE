@@ -21,9 +21,6 @@ def get_movies(url):
         raise HTTPException(status_code=500, detail=f'Error creating new user: {response.json()}')
 
 
-print(get_movies(API_URL))
-
-
 class GetMoviesResponse(BaseModel):
     movies: list[dict]
 
