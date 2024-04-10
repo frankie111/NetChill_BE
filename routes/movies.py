@@ -1,3 +1,4 @@
+import asyncio
 from datetime import timedelta
 
 from fastapi import APIRouter, HTTPException
@@ -10,7 +11,8 @@ movies = APIRouter()
 
 API_KEY = 'api_key=1f5afba9736c70e9178080788e6275cb'
 BASE_URL = "https://api.themoviedb.org/3/"
-API_URL = BASE_URL + '/discover/movie?sort_by=popularity.desc&' + API_KEY
+MOST_POPULAR = BASE_URL + '/discover/movie?sort_by=popularity.desc&' + API_KEY
+SEARCH_MOVIES = BASE_URL + '/search/movie?' + API_KEY + '&query='
 
 
 @cache.redis(
@@ -39,5 +41,16 @@ class GetMoviesResponse(BaseModel):
     description="Get all movies"
 )
 async def get_all_movies():
-    movies = get_movies(API_URL)
+    movies = get_movies(MOST_POPULAR)
+    return GetMoviesResponse(movies=movies)
+
+
+@movies.get(
+    "/movies/{query}",
+    tags=["Movies"],
+    response_model=GetMoviesResponse,
+    description="Search movies"
+)
+async def search_movies(query: str):
+    movies = get_movies(SEARCH_MOVIES + query)
     return GetMoviesResponse(movies=movies)
