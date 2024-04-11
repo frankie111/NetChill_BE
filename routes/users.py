@@ -49,7 +49,7 @@ class GetUserModelResponse(BaseModel):
 
 
 @users.get(
-    "/user/",
+    "/user/{uid}",
     tags=["Users"],
     response_model=GetUserModelResponse,
     description="Get user by id"
