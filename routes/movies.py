@@ -18,7 +18,7 @@ SEARCH_MOVIES = BASE_URL + '/search/movie?' + API_KEY + '&query='
 
 
 @cache.redis(
-    cache_duration=timedelta(hours=12),
+    cache_duration=timedelta(hours=1),
     suffix=cache.POPULAR_MOVIES_CACHE_SUFFIX,
     ignore_cache=False
 )
