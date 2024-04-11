@@ -27,32 +27,38 @@ def get_movies(url):
     if response.status_code == 200:
         data = response.json()
         results = data["results"]
-        return results
+        page_count = data["total_pages"]
+        res = {
+            "movies": results,
+            "page_count": page_count
+        }
+        return res
     else:
         raise HTTPException(status_code=500, detail=f'Error creating new user: {response.json()}')
 
 
 class GetMoviesResponse(BaseModel):
     movies: list[dict]
+    page_count: int
 
 
 @movies.get(
-    "/movies/",
+    "/movies/{page}",
     tags=["Movies"],
     response_model=GetMoviesResponse,
     description="Get all movies"
 )
-async def get_all_movies(user: User = Depends(verify_token)):
-    movies = get_movies(MOST_POPULAR)
-    return GetMoviesResponse(movies=movies)
+async def get_all_movies(page: int = 1, user: User = Depends(verify_token)):
+    res = get_movies(f"{MOST_POPULAR}&page={page}")
+    return GetMoviesResponse(movies=res["movies"], page_count=res["page_count"])
 
 
 @movies.get(
-    "/movies/{query}",
+    "/movies/{query}/{page}",
     tags=["Movies"],
     response_model=GetMoviesResponse,
     description="Search movies"
 )
-async def search_movies(query: str, user: User = Depends(verify_token)):
-    movies = get_movies(SEARCH_MOVIES + query)
-    return GetMoviesResponse(movies=movies)
+async def search_movies(query: str, page, user: User = Depends(verify_token)):
+    res = get_movies(f"{SEARCH_MOVIES}{query}&page={page}")
+    return GetMoviesResponse(movies=res["movies"], page_count=res["page_count"])
