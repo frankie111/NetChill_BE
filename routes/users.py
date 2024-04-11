@@ -44,6 +44,29 @@ def get_user_data_by_id(uid) -> User:
         raise HTTPException(status_code=500, detail=f'Error retrieving user data {e}')
 
 
+class GetUserModelResponse(BaseModel):
+    user: User
+
+
+@users.get(
+    "/user/",
+    tags=["Users"],
+    response_model=GetUserModelResponse,
+    description="Get user by id"
+)
+async def get_user(
+        uid: str,
+        user: User = Depends(verify_token)
+):
+    current_user = get_user_data_by_id(user.uid)
+    # Check if user is admin / user has permission to get data for this user
+    if not current_user.is_admin and current_user.uid != uid:
+        raise HTTPException(status_code=403, detail="Current user does not have permission to get data for this user")
+
+    user_data = get_user_data_by_id(uid)
+    return GetUserModelResponse(user=user_data)
+
+
 class AddUserModelResponse(BaseModel):
     message: str
 

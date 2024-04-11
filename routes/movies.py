@@ -1,10 +1,12 @@
 import asyncio
 from datetime import timedelta
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 import requests
 from pydantic import BaseModel
 
+from firebase import verify_token
+from models import User
 from utils import cache
 
 movies = APIRouter()
@@ -40,7 +42,7 @@ class GetMoviesResponse(BaseModel):
     response_model=GetMoviesResponse,
     description="Get all movies"
 )
-async def get_all_movies():
+async def get_all_movies(user: User = Depends(verify_token)):
     movies = get_movies(MOST_POPULAR)
     return GetMoviesResponse(movies=movies)
 
@@ -51,6 +53,6 @@ async def get_all_movies():
     response_model=GetMoviesResponse,
     description="Search movies"
 )
-async def search_movies(query: str):
+async def search_movies(query: str, user: User = Depends(verify_token)):
     movies = get_movies(SEARCH_MOVIES + query)
     return GetMoviesResponse(movies=movies)
