@@ -1,6 +1,8 @@
 import asyncio
+import os
 from datetime import timedelta
 
+from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Depends
 import requests
 from pydantic import BaseModel
@@ -11,7 +13,8 @@ from utils import cache
 
 movies = APIRouter()
 
-API_KEY = 'api_key=1f5afba9736c70e9178080788e6275cb'
+load_dotenv()
+API_KEY = f"api_key={os.getenv('TMDB_API_KEY')}"
 BASE_URL = "https://api.themoviedb.org/3/"
 MOST_POPULAR = BASE_URL + '/discover/movie?sort_by=popularity.desc&' + API_KEY
 SEARCH_MOVIES = BASE_URL + '/search/movie?' + API_KEY + '&query='

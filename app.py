@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from firebase import setup
 from routes.movies import movies
+from routes.playlists import playlists
 from routes.users import users
 
 app = FastAPI(
@@ -15,6 +16,7 @@ app = FastAPI(
 
 app.include_router(users)
 app.include_router(movies)
+app.include_router(playlists)
 
 origins = [
     'http://localhost:3000',
