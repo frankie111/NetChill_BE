@@ -1,11 +1,13 @@
 import asyncio
 import os
 import time
+from typing import Optional
 
 import aiohttp
 import requests
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 playlists = APIRouter()
 
@@ -29,17 +31,16 @@ async def get_movies_by_ids(movie_ids: list[int]):
         movies = await asyncio.gather(*tasks)
         return movies
 
-
-async def test_get_movies():
-    start_time = time.time()
-    lst = [693134, 823464, 1011985, 601796, 984324, 935271, 634492, 359410, 845783, 1181548]
-
-    movies = await get_movies_by_ids(lst)
-
-    end_time = time.time()
-    execution_time = end_time - start_time
-    print(movies)
-    print(f"Execution time: {execution_time}")
-
-
-asyncio.run(test_get_movies())
+# async def test_get_movies():
+#     start_time = time.time()
+#     lst = [693134, 823464, 1011985, 601796, 984324, 935271, 634492, 359410, 845783, 1181548]
+#
+#     movies = await get_movies_by_ids(lst)
+#
+#     end_time = time.time()
+#     execution_time = end_time - start_time
+#     print(movies)
+#     print(f"Execution time: {execution_time}")
+#
+#
+# asyncio.run(test_get_movies())

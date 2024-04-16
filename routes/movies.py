@@ -1,6 +1,7 @@
 import asyncio
 import os
 from datetime import timedelta
+from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Depends
@@ -8,7 +9,7 @@ import requests
 from pydantic import BaseModel
 
 from firebase import verify_token
-from models import User
+from models import User, Movie
 from utils import cache
 
 movies = APIRouter()
@@ -18,6 +19,11 @@ API_KEY = f"api_key={os.getenv('TMDB_API_KEY')}"
 BASE_URL = "https://api.themoviedb.org/3/"
 MOST_POPULAR = BASE_URL + '/discover/movie?sort_by=popularity.desc&' + API_KEY
 SEARCH_MOVIES = BASE_URL + '/search/movie?' + API_KEY + '&query='
+
+
+class GetMoviesResponse(BaseModel):
+    movies: list[Movie]
+    page_count: int
 
 
 @cache.redis(
@@ -38,11 +44,6 @@ def get_movies(url):
         return res
     else:
         raise HTTPException(status_code=500, detail=f'Error creating new user: {response.json()}')
-
-
-class GetMoviesResponse(BaseModel):
-    movies: list[dict]
-    page_count: int
 
 
 @movies.get(
