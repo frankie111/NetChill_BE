@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from models import Movie
+
 playlists = APIRouter()
 
 load_dotenv()
@@ -20,16 +22,28 @@ async def get_movie_by_id(session, movie_id: int):
     url = f"{BASE_URL}/movie/{movie_id}?{API_KEY}"
     async with session.get(url) as response:
         if response.status == 200:
-            return await response.json()
+            data = await response.json()
+            return data
         else:
             raise HTTPException(status_code=500, detail=f'Error fetching movie: {await response.json()}')
 
 
-async def get_movies_by_ids(movie_ids: list[int]):
+class GetMovieListResponse(BaseModel):
+    movies: list[Movie]
+
+
+@playlists.post(
+    "/movies/list",
+    tags=["Movies"],
+    response_model=GetMovieListResponse,
+    description="Get movies by id"
+)
+async def get_movies_by_id(movie_ids: list[int]):
     async with aiohttp.ClientSession() as session:
         tasks = [get_movie_by_id(session, movie_id) for movie_id in movie_ids]
-        movies = await asyncio.gather(*tasks)
-        return movies
+        results = await asyncio.gather(*tasks)
+        movies = [Movie(**result) for result in results]
+        return GetMovieListResponse(movies=movies)
 
 # async def test_get_movies():
 #     start_time = time.time()

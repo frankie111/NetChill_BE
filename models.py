@@ -14,14 +14,14 @@ class Movie(BaseModel):
     id: int
     original_title: str
     overview: str
-    vote_average: float
-    vote_count: int
-    release_date: str
+    vote_average: Optional[float] = None
+    vote_count: Optional[int] = None
+    release_date: Optional[str] = None
     poster_path: Optional[str] = None
-    adult: bool
-    original_language: str
-    genre_ids: list[int]
-    popularity: float
-    title: str
-    video: bool
+    adult: Optional[bool] = None
+    original_language: Optional[str] = None
+    genre_ids: Optional[list[int]] = None
+    popularity: Optional[float] = None
+    title: Optional[str] = None
+    video: Optional[bool] = None
     backdrop_path: Optional[str] = None
