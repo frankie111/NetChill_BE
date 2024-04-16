@@ -25,3 +25,9 @@ class Movie(BaseModel):
     title: Optional[str] = None
     video: Optional[bool] = None
     backdrop_path: Optional[str] = None
+
+
+class Playlist(BaseModel):
+    id: str
+    description: Optional[str] = None
+    movies: Optional[list[Movie]] = None

@@ -1,15 +1,14 @@
 import asyncio
 import os
-import time
 from typing import Optional
 
 import aiohttp
-import requests
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from models import Movie
+from firebase import get_firestore_db, verify_token
+from models import Movie, User
 
 playlists = APIRouter()
 
@@ -44,6 +43,45 @@ async def get_movies_by_id(movie_ids: list[int]):
         results = await asyncio.gather(*tasks)
         movies = [Movie(**result) for result in results]
         return GetMovieListResponse(movies=movies)
+
+
+class CreatePlaylistRequest(BaseModel):
+    id: str
+    description: Optional[str] = None
+    movies: Optional[list[int]] = None
+
+
+class CreatePlaylistResponse(BaseModel):
+    message: str
+
+
+@playlists.post(
+    "/playlists",
+    tags=["Playlists"],
+    response_model=CreatePlaylistResponse,
+    description="Create a new playlist"
+)
+async def create_playlist(playlist: CreatePlaylistRequest, user: User = Depends(verify_token)):
+    try:
+        db = get_firestore_db()
+        user_ref = db.collection('users').document(user.uid)
+        user_doc = user_ref.get()
+
+        if not user_doc.exists:
+            raise HTTPException(status_code=404, detail=f"User {user.uid} doesn't exist")
+
+        playlist_ref = user_ref.collection("playlists").document(playlist.id)
+        playlist_data = {
+            "id": playlist.id,
+            "description": playlist.description,
+            "movies": playlist.movies
+        }
+        playlist_ref.set(playlist_data)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error creating new playlist: {e}')
+
+    return CreatePlaylistResponse(message=f"Playlist {playlist.id} created successfully")
 
 # async def test_get_movies():
 #     start_time = time.time()

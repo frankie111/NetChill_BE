@@ -30,9 +30,9 @@ def save_user_data(user: User):
         raise HTTPException(status_code=500, detail=f'Error saving user data {e}')
 
 
-def get_user_data_by_id(uid) -> User:
+def get_user_data_by_id(uid, firestore_db=get_firestore_db()) -> User:
     try:
-        db = get_firestore_db()
+        db = firestore_db
         user_doc = db.collection('users').document(uid).get()
         if not user_doc.exists:
             raise HTTPException(status_code=404, detail=f"User {uid} doesn't exist")
